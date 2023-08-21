@@ -42,6 +42,8 @@ file(COPY "${SFML_DIR}/lib/" DESTINATION "${CMAKE_BINARY_DIR}/lib")
 file(COPY "${SFML_DIR}/pkgconfig/" DESTINATION "${CMAKE_BINARY_DIR}/pkgconfig")
 file(COPY "${SFML_DIR}/include/" DESTINATION "${CMAKE_BINARY_DIR}/include")
 
+
+#GTEST
 enable_testing()
 
 set(TEST_SOURCES   

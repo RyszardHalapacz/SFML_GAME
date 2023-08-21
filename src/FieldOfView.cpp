@@ -8,7 +8,7 @@
 void prepare(std::vector<sf::CircleShape>& vecCircle)
 {
     float x =500,y=500;
-    for(int i =0;i<1;i++)
+    for(int i =0;i<2;i++)
     {
     sf::CircleShape zombie;
     zombie.setOrigin(sf::Vector2f(global::radius/2,global::radius/2));
@@ -16,7 +16,10 @@ void prepare(std::vector<sf::CircleShape>& vecCircle)
     zombie.setRadius(global::radius);
     zombie.setFillColor(sf::Color::Green);
     vecCircle.push_back(zombie);
+    x+=150;
+    y+=150;
     }
+
 };
 
 
@@ -35,7 +38,12 @@ bool FieldOfView::isInField(sf::Vector2f point, sf::Vector2f dis,float angle_, f
     sf::Vector2f direction = point - personPosition_;
     float angle = std::atan2(direction.y, direction.x) * 180.f / M_PI;
     float distance = std::sqrt(std::pow((dis.x - personPosition_.x), 2) + std::pow((dis.y - personPosition_.y), 2));
-    return distance <= olddist && angle > angle_ - 1.5f && angle < angle_ + 1.5f;
+   if (distance <= olddist)// && angle > angle_ - 1.5f && angle < angle_ + 1.5f;
+   {
+    //std:: cout << "\ndistance: "<< distance <<" olddistan" << olddist;
+    return (angle > angle_ - 1.f && angle < angle_ + 1.f);
+   }
+   return false;
 }
 
 
@@ -46,7 +54,7 @@ void FieldOfView::update(const sf::Vector2f& curPersonPositionx,
 {
     std::vector<sf::CircleShape> zombie;
     prepare(zombie);
-    std::for_each(zombie.begin(), zombie.end(), [this](auto& it) { window_.draw(it); });
+    //std::for_each(zombie.begin(), zombie.end(), [this](auto& it) { window_.draw(it); });
     
 
     sf::Vector2f personPosition = curPersonPositionx;
@@ -73,6 +81,9 @@ void FieldOfView::update(const sf::Vector2f& curPersonPositionx,
         float currentAngle = leftAngle + angleStep * i;
         float x = personPosition.x + radius_ * std::cos(currentAngle * M_PI / 180.f);
         float y = personPosition.y + radius_ * std::sin(currentAngle * M_PI / 180.f);
+        auto xx = x;
+        auto yy = y;
+        float xxx=500,yyy=500;
         float distance = std::sqrt((x - personPosition.x) * (x - personPosition.x) + (y - personPosition.y) * (y - personPosition.y));
         float ratio = distance / radius_;
         
@@ -83,22 +94,33 @@ void FieldOfView::update(const sf::Vector2f& curPersonPositionx,
         );
         for(auto & z : zombie)
         {
+            auto isDrawed= false;
             for(auto i=0; i<z.getPointCount();i++)
             {
-                if(isInField(sf::Vector2f(z.getPoint(i).x+500,z.getPoint(i).y+500),
+                if(isInField(sf::Vector2f(z.getPoint(i).x+xxx,z.getPoint(i).y+yyy),
                 sf::Vector2f(x,y),
-                currentAngle,distance ))
+                currentAngle,
+                distance ))
                 {
-                 y = z.getPoint(i).x+500;
-                 x = z.getPoint(i).y+500;
-                float distance = std::sqrt((x - personPosition.x) * (x - personPosition.x) + (y - personPosition.y) * (y - personPosition.y));
+                    // if(!isDrawed && i == z.getPointCount()-1)
+                    // {window_.draw(z);
+                    // isDrawed= true;
+                    // }
+                    //std::cout<<"\n  y = z.getPoint(i)" << z.getPoint(i).x+xxx
+                    //<<"\n  y = z.getPoint(i)" << z.getPoint(i).y+yyy;
+                 xx = z.getPoint(i).x+xxx;
+                 yy = z.getPoint(i).y+yyy;
+                 distance = std::sqrt((x - personPosition.x) * (x - personPosition.x) + (y - personPosition.y) * (y - personPosition.y));
                 }
             }
+            xxx+=150;
+            yyy+=150;
         }
 
-        fieldOfView_[i + 1].position = sf::Vector2f(x, y);
+        fieldOfView_[i + 1].position = sf::Vector2f(xx, yy);
         fieldOfView_[i + 1].color = color;
     }
+   
 
     transform_ = sf::Transform::Identity;
 }
@@ -106,4 +128,18 @@ void FieldOfView::update(const sf::Vector2f& curPersonPositionx,
 void FieldOfView::draw(sf::RenderWindow& window)
 {
     window.draw(fieldOfView_, transform_);
+    std::vector<sf::CircleShape> zombie;
+    prepare(zombie);
+     std::for_each(zombie.begin(), zombie.end(), [this](auto& it) { 
+            auto isDrawed = false;
+         for(auto i=0; i<it.getPointCount();i++)
+         {
+            if(!isDrawed && i == it.getPointCount()-1)
+                    {
+                        window_.draw(it);
+                        isDrawed= true;
+                    }
+         }
+        //window_.draw(it); 
+        });
 }

@@ -19,5 +19,5 @@ private:
     Person person_;
     sf::Vector2f cursorPosition_;
     sf::Vector2f velocity_;
-    std::array<bool, 4> isKeyPressed_ {false, false,false,false};
+    std::array<bool, 5> isKeyPressed_ {false, false,false,false,false};
 };
